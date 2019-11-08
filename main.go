@@ -29,6 +29,7 @@ func main() {
 	println(strings.Join(frameArr, " "), "\n\n")
 
 	processEthernetHeader(frameArr[:14])
+	processIpHeader(frameArr[14 : 14+int(frameArr[14][1]-'0')*4])
 }
 
 func processEthernetHeader(header []string) {
@@ -41,4 +42,8 @@ func processEthernetHeader(header []string) {
 	} else if payloadType == "08 06" {
 		println("  Payload Type:", payloadType, "- ARP")
 	}
+}
+
+func processIpHeader(header []string) {
+	println("IP Header:", strings.Join(header, " "))
 }
