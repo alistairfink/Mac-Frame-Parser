@@ -1,39 +1,42 @@
 package main
 
 import (
-	// "bufio"
+	"bufio"
 	"io/ioutil"
 	"log"
-	// "os"
+	"os"
 	"strconv"
 	"strings"
 )
 
 func main() {
-	// reader := bufio.NewReader(os.Stdin)
-	// print("Input File Name: ")
-	// fileName, _ := reader.ReadString('\n')
-	// fileName = fileName[:len(fileName)-1]
-	b, err := ioutil.ReadFile("test.txt") //fileName)
-	if err != nil {
-		log.Fatal(err)
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		print("Input File Name: ")
+		fileName, _ := reader.ReadString('\n')
+		fileName = fileName[:len(fileName)-1]
+		b, err := ioutil.ReadFile(fileName)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		frameArrTemp := strings.Split(string(b), " ")
+		frameArr := []string{}
+		for _, seg := range frameArrTemp {
+			frameArr = append(frameArr, seg[:2])
+			frameArr = append(frameArr, seg[2:])
+		}
+
+		println(strings.Join(frameArr, " "), "\n")
+
+		processEthernetHeader(frameArr[:14])
+		ipHeaderEnd := 14 + int(frameArr[14][1]-'0')*4
+		processIpHeader(frameArr[14:ipHeaderEnd])
+		tcpHeaderEnd := ipHeaderEnd + int(frameArr[ipHeaderEnd+12][0]-'0')*4
+		processTCPHeader(frameArr[ipHeaderEnd:tcpHeaderEnd])
+		println("Data:", strings.Join(frameArr[tcpHeaderEnd:], " "))
+		println()
 	}
-
-	frameArrTemp := strings.Split(string(b), " ")
-	frameArr := []string{}
-	for _, seg := range frameArrTemp {
-		frameArr = append(frameArr, seg[:2])
-		frameArr = append(frameArr, seg[2:])
-	}
-
-	println(strings.Join(frameArr, " "), "\n\n")
-
-	processEthernetHeader(frameArr[:14])
-	ipHeaderEnd := 14 + int(frameArr[14][1]-'0')*4
-	processIpHeader(frameArr[14:ipHeaderEnd])
-	tcpHeaderEnd := ipHeaderEnd + int(frameArr[ipHeaderEnd+12][0]-'0')*4
-	processTCPHeader(frameArr[ipHeaderEnd:tcpHeaderEnd])
-	println("Data:", strings.Join(frameArr[tcpHeaderEnd:], " "))
 }
 
 func processEthernetHeader(header []string) {
