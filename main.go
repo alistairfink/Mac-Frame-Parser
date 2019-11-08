@@ -31,6 +31,8 @@ func main() {
 	processEthernetHeader(frameArr[:14])
 	ipHeaderEnd := 14 + int(frameArr[14][1]-'0')*4
 	processIpHeader(frameArr[14:ipHeaderEnd])
+	tcpHeaderEnd := ipHeaderEnd + int(frameArr[ipHeaderEnd+12][0]-'0')*4
+	processTCPHeader(frameArr[ipHeaderEnd:tcpHeaderEnd])
 }
 
 func processEthernetHeader(header []string) {
@@ -110,7 +112,23 @@ func processIpHeader(header []string) {
 
 	println("\tHeader Checksum:\t\t", "0x"+strings.Join(header[10:12], ""))
 	println("\tSource Address:\t\t\t", hexToIp(header[12:16]))
-	println("\tDestination Address:\t\t", hexToIp(header[16:20]))
+	println("\tDestination Address:\t\t", hexToIp(header[16:20]), "\n")
+}
+
+func processTCPHeader(header []string) {
+	println("TCP Header:", strings.Join(header, " "))
+	println("\tSource Port:\t\t\t", hexToDec(strings.Join(header[:2], "")))
+	println("\tDestination Port:\t\t", hexToDec(strings.Join(header[2:4], "")))
+	println("\tSequeunce Number:\t\t", hexToDec(strings.Join(header[4:8], "")))
+	println("\tAck Number:\t\t\t", hexToDec(strings.Join(header[8:12], "")))
+	println("\tData Offset:\t\t\t", len(header), "Bytes")
+	// Flags
+	flags := hexToBin(header[13])
+	println("\tFlags:\t\t\t\t", "0b"+flags)
+
+	println("\tReceiver Window:\t\t", hexToDec(strings.Join(header[14:16], "")), "Bytes")
+	println("\tChecksum:\t\t\t", "0x"+strings.Join(header[16:18], ""))
+	println("\tUrgent Pointer:\t\t\t", hexToDec(strings.Join(header[18:20], "")))
 }
 
 var hexToBinConversion map[byte]string = map[byte]string{
