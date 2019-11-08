@@ -33,6 +33,7 @@ func main() {
 	processIpHeader(frameArr[14:ipHeaderEnd])
 	tcpHeaderEnd := ipHeaderEnd + int(frameArr[ipHeaderEnd+12][0]-'0')*4
 	processTCPHeader(frameArr[ipHeaderEnd:tcpHeaderEnd])
+	println("Data:", strings.Join(frameArr[tcpHeaderEnd:], " "))
 }
 
 func processEthernetHeader(header []string) {
@@ -128,7 +129,7 @@ func processTCPHeader(header []string) {
 
 	println("\tReceiver Window:\t\t", hexToDec(strings.Join(header[14:16], "")), "Bytes")
 	println("\tChecksum:\t\t\t", "0x"+strings.Join(header[16:18], ""))
-	println("\tUrgent Pointer:\t\t\t", hexToDec(strings.Join(header[18:20], "")))
+	println("\tUrgent Pointer:\t\t\t", hexToDec(strings.Join(header[18:20], "")), "\n")
 }
 
 var hexToBinConversion map[byte]string = map[byte]string{
