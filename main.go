@@ -126,6 +126,12 @@ func processTCPHeader(header []string) {
 	// Flags
 	flags := hexToBin(header[13])
 	println("\tFlags:\t\t\t\t", "0b"+flags)
+	println("\t\tURG:", flags[2]-'0')
+	println("\t\tACK:", flags[3]-'0')
+	println("\t\tPSH:", flags[4]-'0')
+	println("\t\tRST:", flags[5]-'0')
+	println("\t\tSYN:", flags[6]-'0')
+	println("\t\tFIN:", flags[7]-'0')
 
 	println("\tReceiver Window:\t\t", hexToDec(strings.Join(header[14:16], "")), "Bytes")
 	println("\tChecksum:\t\t\t", "0x"+strings.Join(header[16:18], ""))
